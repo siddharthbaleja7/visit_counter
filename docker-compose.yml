@@ -1,3 +1,46 @@
+# version: '3.8'
+
+# services:
+#   app:
+#     build: .
+#     ports:
+#       - "8000:8000"
+#     environment:
+#       - REDIS_NODES=redis://redis1:6379,redis://redis2:6379,redis://redis3:6379
+#       - DEBUG=true
+#     depends_on:
+#       - redis1
+#       - redis2
+#       - redis3
+
+#   redis1:
+#     image: redis:7
+#     ports:
+#       - "6379:6379"
+#     volumes:
+#       - redis1_data:/data
+#     command: redis-server --appendonly yes
+
+#   redis2:
+#     image: redis:7
+#     ports:
+#       - "6380:6379"
+#     volumes:
+#       - redis2_data:/data
+#     command: redis-server --appendonly yes
+
+#   redis3:
+#     image: redis:7
+#     ports:
+#       - "6381:6379"
+#     volumes:
+#       - redis3_data:/data
+#     command: redis-server --appendonly yes
+
+# volumes:
+#   redis1_data:
+#   redis2_data:
+#   redis3_data: 
 version: '3.8'
 
 services:
@@ -6,38 +49,28 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - REDIS_NODES=redis://redis1:6379,redis://redis2:6379,redis://redis3:6379
+      - REDIS_NODES=redis://redis_7070:6379,redis://redis_7071:6379
       - DEBUG=true
     depends_on:
-      - redis1
-      - redis2
-      - redis3
+      - redis_7070
+      - redis_7071
 
-  redis1:
+  redis_7070:
     image: redis:7
     ports:
-      - "6379:6379"
+      - "7070:6379"
     volumes:
-      - redis1_data:/data
+      - redis_7070_data:/data
     command: redis-server --appendonly yes
 
-  redis2:
+  redis_7071:
     image: redis:7
     ports:
-      - "6380:6379"
+      - "7071:6379"
     volumes:
-      - redis2_data:/data
-    command: redis-server --appendonly yes
-
-  redis3:
-    image: redis:7
-    ports:
-      - "6381:6379"
-    volumes:
-      - redis3_data:/data
+      - redis_7071_data:/data
     command: redis-server --appendonly yes
 
 volumes:
-  redis1_data:
-  redis2_data:
-  redis3_data: 
+  redis_7070_data:
+  redis_7071_data:

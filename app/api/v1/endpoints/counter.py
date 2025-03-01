@@ -1,34 +1,25 @@
 from fastapi import APIRouter, HTTPException, Depends
-from typing import Dict, Any
 from ....services.visit_counter import VisitCounterService
-from ....schemas.counter import VisitCount
 
 router = APIRouter()
 
-# Dependency to get VisitCounterService instance
-def get_visit_counter_service():
-    return VisitCounterService()
+# Use a shared instance of VisitCounterService
+counter_service = VisitCounterService()
 
 @router.post("/visit/{page_id}")
-async def record_visit(
-    page_id: str,
-    counter_service: VisitCounterService = Depends(get_visit_counter_service)
-):
-    """Record a visit for a website"""
+def record_visit(page_id: str):
+    """Record a visit for a website (sharded mode)"""
     try:
-        await counter_service.increment_visit(page_id)
-        return {"status": "success", "message": f"Visit recorded for page {page_id}"}
+        counter_service.increment_visit(page_id)  # ✅ Store in batch buffer
+        return {"status": "success", "message": f"Visit recorded for page {page_id} (sharded mode)"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/visits/{page_id}", response_model=VisitCount)
-async def get_visits(
-    page_id: str,
-    counter_service: VisitCounterService = Depends(get_visit_counter_service)
-):
+@router.get("/visits/{page_id}")
+def get_visits(page_id: str):
     """Get visit count for a website"""
     try:
-        count = await counter_service.get_visit_count(page_id)
-        return VisitCount(page_id=page_id, count=count)
+        count, served_via = counter_service.get_visit_count_with_source(page_id)
+        return {"visits": count, "served_via": served_via}  # ✅ Return correct shard name
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e)) 
+        raise HTTPException(status_code=500, detail=str(e))
