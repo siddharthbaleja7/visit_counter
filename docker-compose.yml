@@ -41,6 +41,7 @@
 #   redis1_data:
 #   redis2_data:
 #   redis3_data: 
+
 version: '3.8'
 
 services:
